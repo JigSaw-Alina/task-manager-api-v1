@@ -17,6 +17,10 @@ app.use(cookieParser());
 
 app.use(mongoSanitize());
 
+app.get("/", (req, res) => {
+  res.send("WORKING!!")
+})
+
 app.use("/api/v1/task", taskRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);

@@ -1,6 +1,5 @@
 const _ = require("lodash");
 const multer = require('multer')
-const getStream = require('get-stream')
 const sharp = require('sharp')
 
 const catchAsync = require("../utils/errors/catchAsync");
