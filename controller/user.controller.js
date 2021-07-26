@@ -79,7 +79,6 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
   // Delete user tasks when user is removed
   await Task.deleteMany({ _createdBy: user._id });
-  next();
 
   res.status(204).json({
     status: "success",

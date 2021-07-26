@@ -1,4 +1,7 @@
 const _ = require("lodash");
+const multer = require('multer')
+const getStream = require('get-stream')
+const sharp = require('sharp')
 
 const catchAsync = require("../utils/errors/catchAsync");
 const AppError = require("../utils/errors/AppErrors");
@@ -30,6 +33,7 @@ exports.signupAppUser = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
+
   console.log(email, password);
 
   if (!email || !password)
@@ -86,6 +90,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 exports.getMe = catchAsync(async (req, res, next) => {
   const user = req.user;
   user.password = undefined;
+  user.avatar = undefined;
 
   res.status(200).json({
     status: "success",
@@ -133,7 +138,65 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       user: UpdateMe,
     },
   });
-});
+}); 
+
+const storage = multer.memoryStorage()
+exports.upload = multer({
+    dest: 'images',
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('File upload an image'))
+        }
+        cb(undefined, true)
+  },
+    storage
+})
+
+exports.uploadAvatar = catchAsync(async (req, res, next) => {
+
+  const buffer = await sharp(req.file.buffer).resize({ height: 250, width: 250 }).png().toBuffer();
+
+  if (!buffer) return next(new AppError("Please provide image", 401));
+  
+  req.user.avatar = buffer
+
+  await req.user.save({ validateBeforeSave: false })
+  
+  res.status(200).json({
+    status: "success",
+  })
+})
+
+
+exports.deleteAvatar = catchAsync(async (req, res, next) => {
+  req.user.avatar = undefined
+  
+  await req.user.save({ validateBeforeSave: false })
+
+   res.status(200).json({
+    status: 'success',
+    data: null,
+  })
+})
+
+
+// exports.getAvatar = catchAsync(async (req, res, next) => {
+//     const _id = req.params.id
+  
+//   const user = await User.findById(_id)
+
+//   if (!user) return next(new AppError("User not found", 404))
+
+
+//   res.set('Content-Type', 'image/png')
+
+//    res.status(200).json({
+//     status: 'success',
+//   })
+// })
 
 exports.authenticate = catchAsync(async (req, res, next) => {
   const { authorization, c_auth } = req.headers;

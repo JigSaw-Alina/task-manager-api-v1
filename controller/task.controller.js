@@ -49,7 +49,9 @@ exports.getTask = catchAsync(async (req, res, next) => {
 
   const queryFeature = new QueryFeatures(Task.find(initialQuery), req.query)
     .limitFields()
-    .populate();
+    .populate()
+    .paginate()
+    .filter()
 
   const task = await queryFeature.query;
 

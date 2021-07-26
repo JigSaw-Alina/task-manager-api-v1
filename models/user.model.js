@@ -51,6 +51,9 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide your mobileNumber"],
     },
+    avatar: {
+      type: Buffer
+    },
     status: {
       type: String,
       enum: ["Active", "Deleted"],
