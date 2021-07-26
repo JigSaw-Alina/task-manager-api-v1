@@ -25,7 +25,7 @@ const server = app.listen(process.env.PORT, () =>
   console.log(`Server is running at port ${process.env.PORT}`)
 );
 
-// catch unhandled async code (GLOBAL)
+//  catch unhandled async code (GLOBAL)
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION!");
   console.log(err.name, err.message);
